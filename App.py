@@ -61,7 +61,7 @@ def get_citas(año, mes):
         mes2 = int(mes) + 1
         año2 = año
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM citas WHERE fecha >= '{0}-{1}-01' AND fecha < '{2}-{3}-01'".format(año, mes, año2, mes2))
+    cur.execute("SELECT c.id, c.pacienteId, p.nombre, p.apellido, p.edad, c.doctorId, d.nombre, d.apellido, c.especialidadId, e.especialidad, c.fecha, c.hora FROM citas c INNER JOIN doctores d ON c.doctorId = d.id INNER JOIN pacientes p ON c.pacienteId = p.id INNER JOIN especialidades e ON c.especialidadId = e.id WHERE fecha >= '{0}-{1}-01' AND fecha < '{2}-{3}-01'".format(año, mes, año2, mes2))
     data = cur.fetchall()
     # Convertir las tuplas a una lista de diccionarios
     row_headers = [x[0] for x in cur.description]  # Esto captura los nombres de las columnas
