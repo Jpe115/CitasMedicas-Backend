@@ -125,5 +125,25 @@ def delete_doctor(id):
     finally:
         cur.close()  # Asegurándonos de cerrar el cursor
 
+@app.route("/api/pacientes/delete/<string:id>")
+def delete_paciente(id):
+    cur = mysql.connection.cursor()
+    try:
+        # Ejecutando la sentencia SQL de DELETE
+        result = cur.execute("DELETE FROM pacientes WHERE id = %s", (id,))
+        mysql.connection.commit()
+        
+        # Verificando si algún registro fue afectado
+        if result > 0:
+            return jsonify({'success': True, 'message': 'Paciente eliminado correctamente'}), 200
+        else:
+            return jsonify({'success': False, 'message': 'No se encontró el paciente para eliminar'}), 404
+    except Exception as e:
+        # En caso de una excepción, hacemos rollback y devolvemos error
+        mysql.connection.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        cur.close()  # Asegurándonos de cerrar el cursor
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)
