@@ -13,10 +13,10 @@ mysql = MySQL(app)
 # MySQL
 app.secret_key = "mysecretkey"
 
-@app.route("/api/doctors")
-def get_doctors():
+@app.route("/api/doctores")
+def get_doctores():
     cur = mysql.connection.cursor()
-    cur.execute("select * from doctores")
+    cur.execute("SELECT d.id, nombre, apellido, especialidadId, e.especialidad FROM doctores d INNER JOIN especialidades e ON d.especialidadId = e.id")
     data = cur.fetchall()
     # Convertir las tuplas a una lista de diccionarios
     row_headers = [x[0] for x in cur.description]  # Esto captura los nombres de las columnas
@@ -26,8 +26,8 @@ def get_doctors():
     
     return jsonify(json_data)
 
-@app.route("/api/patients")
-def get_patients():
+@app.route("/api/pacientes")
+def get_pacientes():
     cur = mysql.connection.cursor()
     cur.execute("select * from pacientes")
     data = cur.fetchall()
@@ -38,11 +38,11 @@ def get_patients():
         json_data.append(dict(zip(row_headers, result)))
     
     return jsonify(json_data)
-@app.route("/api/consults")
+@app.route("/api/especialidades")
 
-def get_consults():
+def get_especialidades():
     cur = mysql.connection.cursor()
-    cur.execute("select * from consultas")
+    cur.execute("select * from especialidades")
     data = cur.fetchall()
     # Convertir las tuplas a una lista de diccionarios
     row_headers = [x[0] for x in cur.description]  # Esto captura los nombres de las columnas
@@ -52,10 +52,16 @@ def get_consults():
     
     return jsonify(json_data)
 
-@app.route("/api/appointments")
-def get_appointments():
+@app.route("/api/citas/<string:año>/<string:mes>")
+def get_citas(año, mes):
+    if mes == "12":
+        mes2 = "01"
+        año2 = int(año) + 1
+    else:
+        mes2 = int(mes) + 1
+        año2 = año
     cur = mysql.connection.cursor()
-    cur.execute("select * from citas")
+    cur.execute("SELECT * FROM citas WHERE fecha >= '{0}-{1}-01' AND fecha < '{2}-{3}-01'".format(año, mes, año2, mes2))
     data = cur.fetchall()
     # Convertir las tuplas a una lista de diccionarios
     row_headers = [x[0] for x in cur.description]  # Esto captura los nombres de las columnas
