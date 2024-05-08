@@ -228,12 +228,16 @@ def delete_doctor():
     finally:
         cur.close()
 
-@app.route("/api/pacientes/delete/<string:id>")
-def delete_paciente(id):
+@app.route("/api/pacientes/delete", methods=["DELETE"])
+def delete_paciente():
     cur = mysql.connection.cursor()
     try:
+        id = request.form['id']
+        if id is None:
+            return jsonify({'success': False, 'message': 'Se requiere el parámetro "id"'})
+
         # Ejecutando la sentencia SQL de DELETE
-        result = cur.execute("DELETE FROM pacientes WHERE id = %s", (id,))
+        result = cur.execute("DELETE FROM pacientes WHERE id = %s", (id))
         mysql.connection.commit()
         
         # Verificando si algún registro fue afectado
@@ -248,10 +252,14 @@ def delete_paciente(id):
     finally:
         cur.close()  # Asegurándonos de cerrar el cursor
 
-@app.route("/api/especialidades/delete/<string:id>")
+@app.route("/api/especialidades/delete/", methods=["DELETE"])
 def delete_especialidad(id):
     cur = mysql.connection.cursor()
     try:
+        id = request.form['id']
+        if id is None:
+            return jsonify({'success': False, 'message': 'Se requiere el parámetro "id"'})
+
         # Ejecutando la sentencia SQL de DELETE
         result = cur.execute("DELETE FROM especialidades WHERE id = %s", (id,))
         mysql.connection.commit()
@@ -268,10 +276,14 @@ def delete_especialidad(id):
     finally:
         cur.close()  # Asegurándonos de cerrar el cursor
 
-@app.route("/api/citas/delete/<string:id>")
+@app.route("/api/citas/delete/", methods=["DELETE"])
 def delete_cita(id):
     cur = mysql.connection.cursor()
     try:
+        id = request.form['id']
+        if id is None:
+            return jsonify({'success': False, 'message': 'Se requiere el parámetro "id"'})
+
         # Ejecutando la sentencia SQL de DELETE
         result = cur.execute("DELETE FROM citas WHERE id = %s", (id,))
         mysql.connection.commit()
