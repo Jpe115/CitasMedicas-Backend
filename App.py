@@ -92,7 +92,7 @@ def add_doctor():
         if result > 0:
             return jsonify({'success': True, 'message': 'Doctor añadido correctamente'}), 200
         else:
-            return jsonify({'success': False, 'message': 'No se encontró el doctor para eliminar'}), 404
+            return jsonify({'success': False, 'message': 'No se pudo añadir al doctor'}), 404
     except Exception as e:
         # En caso de una excepción, hacemos rollback y devolvemos error
         mysql.connection.rollback()
@@ -123,7 +123,7 @@ def add_paciente():
         if result > 0:
             return jsonify({'success': True, 'message': 'Paciente añadido correctamente'}), 200
         else:
-            return jsonify({'success': False, 'message': 'No se encontró el paciente para eliminar'}), 404
+            return jsonify({'success': False, 'message': 'No se pudo añadir al paciente'}), 404
     except Exception as e:
         # En caso de una excepción, hacemos rollback y devolvemos error
         mysql.connection.rollback()
