@@ -224,7 +224,7 @@ def update_doctor():
         cur = mysql.connection.cursor()
         cur.execute("SELECT * FROM doctores WHERE id = %s", (id))
         doctor = cur.fetchone()
-        if doctor:
+        if not doctor:
             return jsonify({'success': False, 'message': 'No existe el doctor solicitado'}), 400
 
         result = cur.execute("UPDATE doctores SET nombre = %s, apellido = %s, especialidadId = %s WHERE id = %s", (nombre, apellido, especialidadId, id))
@@ -261,7 +261,7 @@ def update_paciente():
         cur = mysql.connection.cursor()
         cur.execute("SELECT * FROM pacientes WHERE id = %s", (id))
         paciente = cur.fetchone()
-        if paciente:
+        if not paciente:
             return jsonify({'success': False, 'message': 'No existe el paciente solicitado'}), 400
 
         result = cur.execute("UPDATE pacientes SET nombre = %s, apellido = %s, edad = %s, telefono = %s, correo = %s WHERE id = %s", (nombre, apellido, edad, telefono, correo, id))
@@ -297,7 +297,7 @@ def update_cita():
         cur = mysql.connection.cursor()
         cur.execute("SELECT * FROM citas WHERE id = %s", (id))
         cita = cur.fetchone()
-        if cita:
+        if not cita:
             return jsonify({'success': False, 'message': 'No existe la cita solicitada'}), 400
 
         result = cur.execute("UPDATE citas SET doctorId = %s, pacienteId = %s, especialidadId = %s, fecha = %s, hora = %s WHERE id = %s", (doctorId, pacienteId, especialidadId, fecha, hora, id))
@@ -329,7 +329,7 @@ def update_especialidad():
         cur = mysql.connection.cursor()
         cur.execute("SELECT * FROM especialidades WHERE id = %s", (id))
         especialidad = cur.fetchone()
-        if especialidad:
+        if not especialidad:
             return jsonify({'success': False, 'message': 'No existe la especialidad solicitada'}), 400
 
         result = cur.execute("UPDATE especialidades SET especialidad = %s WHERE id = %s", (especialidad, id))
