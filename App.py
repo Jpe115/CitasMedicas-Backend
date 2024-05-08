@@ -75,8 +75,6 @@ def get_citas(year, mes):
 def add_doctor():
     if request.method != "POST":
         return jsonify({'success': False, 'message': 'Internal Server Error'}), 500
-
-    cur = mysql.connection.cursor()
     
     try:
         # Usando request.form.get para manejar mejor los casos en los que los campos puedan estar vacíos.
@@ -87,7 +85,11 @@ def add_doctor():
             return jsonify({'success': False, 'message': 'Datos faltantes o erróneos'}), 500
 
         #Comprobar que no sea repetido
-
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM doctores WHERE nombre = %s AND apellido = %s AND especialidadId = %s", (nombre, apellido, especialidadId))
+        doctor = cur.fetchone()
+        if doctor:
+            return jsonify({'success': False, 'message': 'Los datos del doctor ya existen'}), 400
 
         result = cur.execute("insert into doctores (nombre, apellido, especialidadId) values (%s, %s, %s)", (nombre, apellido, especialidadId))
         mysql.connection.commit()
@@ -108,8 +110,6 @@ def add_doctor():
 def add_paciente():
     if request.method != "POST":
         return jsonify({'success': False, 'message': 'Internal Server Error'}), 500
-
-    cur = mysql.connection.cursor()
     
     try:
         nombre = request.form["nombre"]
@@ -119,6 +119,13 @@ def add_paciente():
         correo = request.form["correo"]
         if not nombre or not apellido or not edad or not telefono or not correo:
             return jsonify({'success': False, 'message': 'Datos faltantes o erróneos'}), 500
+        
+        #Verificar repetidos
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM pacientes WHERE nombre = %s AND apellido = %s AND edad = %s AND telefono = %s AND correo = %s", (nombre, apellido, edad, telefono, correo))
+        paciente = cur.fetchone()
+        if paciente:
+            return jsonify({'success': False, 'message': 'Los datos del paciente ya existen'}), 400
 
         result = cur.execute("insert into pacientes (nombre, apellido, edad, telefono, correo) values (%s, %s, %s, %s, %s)", (nombre, apellido, edad, telefono, correo))
         mysql.connection.commit()
@@ -139,13 +146,17 @@ def add_paciente():
 def add_especialidad():
     if request.method != "POST":
         return jsonify({'success': False, 'message': 'Internal Server Error'}), 500
-
-    cur = mysql.connection.cursor()
     
     try:
         especialidad = request.form["especialidad"]
         if not especialidad:
             return jsonify({'success': False, 'message': 'Datos faltantes o erróneos'}), 500
+        
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM especialidades WHERE especialidad = %s", (especialidad))
+        especialidad = cur.fetchone()
+        if especialidad:
+            return jsonify({'success': False, 'message': 'Los datos de la especialidad ya existen'}), 400
 
         result = cur.execute("insert into especialidades (especialidad) values (%s)", (especialidad))
         mysql.connection.commit()
@@ -166,8 +177,6 @@ def add_especialidad():
 def add_cita():
     if request.method != "POST":
         return jsonify({'success': False, 'message': 'Internal Server Error'}), 500
-
-    cur = mysql.connection.cursor()
     
     try:
         doctorId = request.form["doctorId"]
@@ -177,6 +186,12 @@ def add_cita():
         hora = request.form["hora"]
         if not doctorId or not pacienteId or not especialidadId or not fecha or not hora:
             return jsonify({'success': False, 'message': 'Datos faltantes o erróneos'}), 500
+        
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM citas WHERE doctorId = %s AND pacienteId = %s AND especialidadId = %s AND fecha = %s AND hora = %s", (doctorId, pacienteId, especialidadId, fecha, hora))
+        cita = cur.fetchone()
+        if cita:
+            return jsonify({'success': False, 'message': 'Los datos de la cita ya existen'}), 400
 
         result = cur.execute("insert into citas (doctorId, pacienteId, especialidadId, fecha, hora) values (%s, %s, %s, %s, %s)", (doctorId, pacienteId, especialidadId, fecha, hora))
         mysql.connection.commit()
