@@ -105,13 +105,25 @@ def get_citas(año, mes):
 #         flash("Contact updated successfully")
 #         return redirect(url_for("Index"))
 
-@app.route("/delete/<string:id>")
-def delete_contact(id):
+@app.route("/api/doctores/delete/<string:id>")
+def delete_doctor(id):
     cur = mysql.connection.cursor()
-    cur.execute("delete from contactss where id = {0}".format(id))
-    mysql.connection.commit()
-    flash("Contact removed successfully")
-    return redirect(url_for("Index"))
+    try:
+        # Ejecutando la sentencia SQL de DELETE
+        result = cur.execute("DELETE FROM doctores WHERE id = %s", (id,))
+        mysql.connection.commit()
+        
+        # Verificando si algún registro fue afectado
+        if result > 0:
+            return jsonify({'success': True, 'message': 'Doctor eliminado correctamente'}), 200
+        else:
+            return jsonify({'success': False, 'message': 'No se encontró el doctor para eliminar'}), 404
+    except Exception as e:
+        # En caso de una excepción, hacemos rollback y devolvemos error
+        mysql.connection.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        cur.close()  # Asegurándonos de cerrar el cursor
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)
