@@ -77,7 +77,6 @@ def add_doctor():
         return jsonify({'success': False, 'message': 'Internal Server Error'}), 500
     
     try:
-        # Usando request.form.get para manejar mejor los casos en los que los campos puedan estar vacíos.
         nombre = request.form["nombre"]
         apellido = request.form["apellido"]
         especialidadId = request.form["especialidadId"]
@@ -208,19 +207,40 @@ def add_cita():
     finally:
         cur.close()  # Asegurándonos de cerrar el cursor
 
-# @app.route("/update/<id>", methods=["POST"])
-# def update_contact(id):
-#     if request.method == "POST":
-#         fullname = request.form["fullname"]
-#         email = request.form["email"]
-#         phone = request.form["phone"]
+@app.route("/api/doctores/update", methods=["PUT"])
+def update_doctor():
+    if request.method != "POST":
+        return jsonify({'success': False, 'message': 'Internal Server Error'}), 500
+    
+    try:
+        id = request.form["id"]
+        nombre = request.form["nombre"]
+        apellido = request.form["apellido"]
+        especialidadId = request.form["especialidadId"]
+        if not id or not nombre or not apellido or not especialidadId:
+            return jsonify({'success': False, 'message': 'Datos faltantes o erróneos'}), 500
 
-#         cur = mysql.connection.cursor()
-#         cur.execute("UPDATE contactss SET fullname = %s, email = %s, phone = %s WHERE id = %s", (fullname, email, phone, id))
-#         mysql.connection.commit()
+        #Comprobar que exista antes de update
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM doctores WHERE id = %s", (id))
+        doctor = cur.fetchone()
+        if doctor:
+            return jsonify({'success': False, 'message': 'No existe el doctor solicitado'}), 400
 
-#         flash("Contact updated successfully")
-#         return redirect(url_for("Index"))
+        result = cur.execute("UPDATE doctores SET nombre = %s, apellido = %s, especialidadId = %s WHERE id = %s", (nombre, apellido, especialidadId, id))
+        mysql.connection.commit()
+
+        # Verificando si algún registro fue afectado
+        if result > 0:
+            return jsonify({'success': True, 'message': 'Doctor actualizado correctamente'}), 200
+        else:
+            return jsonify({'success': False, 'message': 'No se pudo actualizar al doctor'}), 404
+    except Exception as e:
+        # En caso de una excepción, hacemos rollback y devolvemos error
+        mysql.connection.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        cur.close()  # Asegurándonos de cerrar el cursor
 
 @app.route("/api/doctores/delete", methods=["DELETE"])
 def delete_doctor():
