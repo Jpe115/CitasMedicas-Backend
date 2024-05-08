@@ -278,6 +278,38 @@ def update_paciente():
     finally:
         cur.close()
 
+@app.route("/api/especialidades/update", methods=["PUT"])
+def update_especialidad():
+    if request.method != "PUT":
+        return jsonify({'success': False, 'message': 'Internal Server Error'}), 500
+    
+    try:
+        id = request.form["id"]
+        especialidad = request.form["especialidad"]
+        if not id or not especialidad:
+            return jsonify({'success': False, 'message': 'Datos faltantes o erróneos'}), 500
+
+        #Comprobar que exista antes de update
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM especialidades WHERE id = %s", (id))
+        especialidad = cur.fetchone()
+        if especialidad:
+            return jsonify({'success': False, 'message': 'No existe la especialidad solicitada'}), 400
+
+        result = cur.execute("UPDATE especialidades SET especialidad = %s WHERE id = %s", (especialidad, id))
+        mysql.connection.commit()
+
+        # Verificando si algún registro fue afectado
+        if result > 0:
+            return jsonify({'success': True, 'message': 'Especialidad actualizada correctamente'}), 200
+        else:
+            return jsonify({'success': False, 'message': 'No se pudo actualizar la especialidad'}), 404
+    except Exception as e:
+        mysql.connection.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        cur.close()
+
 @app.route("/api/doctores/delete", methods=["DELETE"])
 def delete_doctor():
     try:
