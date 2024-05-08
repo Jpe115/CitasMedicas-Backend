@@ -79,10 +79,11 @@ def add_doctor():
     cur = mysql.connection.cursor()
     
     try:
+        # Usando request.form.get para manejar mejor los casos en los que los campos puedan estar vacíos.
         nombre = request.form["nombre"]
         apellido = request.form["apellido"]
         especialidadId = request.form["especialidadId"]
-        if nombre == "" or apellido == "" or especialidadId == "":
+        if not nombre or not apellido or not especialidadId:
             return jsonify({'success': False, 'message': 'Datos faltantes o erróneos'}), 500
 
         result = cur.execute("insert into doctores (nombre, apellido, especialidadId) values (%s, %s, %s)", (nombre, apellido, especialidadId))
@@ -113,7 +114,7 @@ def add_paciente():
         edad = request.form["edad"]
         telefono = request.form["telefono"]
         correo = request.form["correo"]
-        if nombre == "" or apellido == "" or edad == "" or telefono == "" or correo == "":
+        if not nombre or not apellido or not edad or not telefono or not correo:
             return jsonify({'success': False, 'message': 'Datos faltantes o erróneos'}), 500
 
         result = cur.execute("insert into pacientes (nombre, apellido, edad, telefono, correo) values (%s, %s, %s, %s, %s)", (nombre, apellido, edad, telefono, correo))
@@ -140,7 +141,7 @@ def add_especialidad():
     
     try:
         especialidad = request.form["especialidad"]
-        if especialidad == "":
+        if not especialidad:
             return jsonify({'success': False, 'message': 'Datos faltantes o erróneos'}), 500
 
         result = cur.execute("insert into especialidades (especialidad) values (%s)", (especialidad))
@@ -171,7 +172,7 @@ def add_cita():
         especialidadId = request.form["especialidadId"]
         fecha = request.form["fecha"]
         hora = request.form["hora"]
-        if doctorId == "" or pacienteId == "" or especialidadId == "" or fecha == "" or hora == "":
+        if not doctorId or not pacienteId or not especialidadId or not fecha or not hora:
             return jsonify({'success': False, 'message': 'Datos faltantes o erróneos'}), 500
 
         result = cur.execute("insert into citas (doctorId, pacienteId, especialidadId, fecha, hora) values (%s, %s, %s, %s, %s)", (doctorId, pacienteId, especialidadId, fecha, hora))
