@@ -71,25 +71,34 @@ def get_citas(año, mes):
     
     return jsonify(json_data)
 
-# @app.route("/add_contact", methods=["POST"])
-# def add_contact():
-#     if request.method == "POST":
-#         fullname = request.form["fullname"]
-#         phone = request.form["phone"]
-#         email = request.form["email"]
-#         cur = mysql.connection.cursor()
-#         cur.execute("insert into contactss (fullname, phone, email) values (%s, %s, %s)", (fullname, phone, email))
-#         mysql.connection.commit()
-#         flash("Contact added")
-        
-#         return redirect(url_for("Index"))
+@app.route("/api/doctores/add", methods=["POST"])
+def add_doctor():
+    if request.method != "POST":
+        return jsonify({'success': False, 'message': 'Internal Server Error'}), 500
 
-# @app.route("/edit/<id>")
-# def get_contact(id):
-#     cur = mysql.connection.cursor()
-#     cur.execute("select * from contactss where id = {0}".format(id))
-#     data = cur.fetchall()
-#     return render_template("edit-contact.html", contact = data[0])
+    cur = mysql.connection.cursor()
+    
+    try:
+        nombre = request.form["nombre"]
+        apellido = request.form["apellido"]
+        especialidadId = request.form["especialidadId"]
+        if nombre == "" or apellido == "" or especialidadId == "":
+            return jsonify({'success': False, 'message': 'Datos faltantes o erróneos'}), 500
+
+        result = cur.execute("insert into doctores (nombre, apellido, especialidadId) values (%s, %s, %s)", (nombre, apellido, especialidadId))
+        mysql.connection.commit()
+
+        # Verificando si algún registro fue afectado
+        if result > 0:
+            return jsonify({'success': True, 'message': 'Doctor añadido correctamente'}), 200
+        else:
+            return jsonify({'success': False, 'message': 'No se encontró el doctor para eliminar'}), 404
+    except Exception as e:
+        # En caso de una excepción, hacemos rollback y devolvemos error
+        mysql.connection.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        cur.close()  # Asegurándonos de cerrar el cursor
 
 # @app.route("/update/<id>", methods=["POST"])
 # def update_contact(id):
