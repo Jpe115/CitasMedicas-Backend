@@ -100,6 +100,37 @@ def add_doctor():
     finally:
         cur.close()  # Asegurándonos de cerrar el cursor
 
+@app.route("/api/pacientes/add", methods=["POST"])
+def add_paciente():
+    if request.method != "POST":
+        return jsonify({'success': False, 'message': 'Internal Server Error'}), 500
+
+    cur = mysql.connection.cursor()
+    
+    try:
+        nombre = request.form["nombre"]
+        apellido = request.form["apellido"]
+        edad = request.form["edad"]
+        telefono = request.form["telefono"]
+        correo = request.form["correo"]
+        if nombre == "" or apellido == "" or edad == "" or telefono == "" or correo == "":
+            return jsonify({'success': False, 'message': 'Datos faltantes o erróneos'}), 500
+
+        result = cur.execute("insert into pacientes (nombre, apellido, edad, telefono, correo) values (%s, %s, %s, %s, %s)", (nombre, apellido, edad, telefono, correo))
+        mysql.connection.commit()
+
+        # Verificando si algún registro fue afectado
+        if result > 0:
+            return jsonify({'success': True, 'message': 'Paciente añadido correctamente'}), 200
+        else:
+            return jsonify({'success': False, 'message': 'No se encontró el paciente para eliminar'}), 404
+    except Exception as e:
+        # En caso de una excepción, hacemos rollback y devolvemos error
+        mysql.connection.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        cur.close()  # Asegurándonos de cerrar el cursor
+
 # @app.route("/update/<id>", methods=["POST"])
 # def update_contact(id):
 #     if request.method == "POST":
