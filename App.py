@@ -209,7 +209,7 @@ def add_cita():
 
 @app.route("/api/doctores/update", methods=["PUT"])
 def update_doctor():
-    if request.method != "POST":
+    if request.method != "PUT":
         return jsonify({'success': False, 'message': 'Internal Server Error'}), 500
     
     try:
@@ -241,6 +241,42 @@ def update_doctor():
         return jsonify({'success': False, 'message': str(e)}), 500
     finally:
         cur.close()  # Asegurándonos de cerrar el cursor
+
+@app.route("/api/pacientes/update", methods=["PUT"])
+def update_paciente():
+    if request.method != "PUT":
+        return jsonify({'success': False, 'message': 'Internal Server Error'}), 500
+    
+    try:
+        id = request.form["id"]
+        nombre = request.form["nombre"]
+        apellido = request.form["apellido"]
+        edad = request.form["edad"]
+        telefono = request.form["telefono"]
+        correo = request.form["correo"]
+        if not id or not nombre or not apellido or not edad or not telefono or not correo:
+            return jsonify({'success': False, 'message': 'Datos faltantes o erróneos'}), 500
+
+        #Comprobar que exista antes de update
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM pacientes WHERE id = %s", (id))
+        paciente = cur.fetchone()
+        if paciente:
+            return jsonify({'success': False, 'message': 'No existe el paciente solicitado'}), 400
+
+        result = cur.execute("UPDATE pacientes SET nombre = %s, apellido = %s, edad = %s, telefono = %s, correo = %s WHERE id = %s", (nombre, apellido, edad, telefono, correo, id))
+        mysql.connection.commit()
+
+        # Verificando si algún registro fue afectado
+        if result > 0:
+            return jsonify({'success': True, 'message': 'Paciente actualizado correctamente'}), 200
+        else:
+            return jsonify({'success': False, 'message': 'No se pudo actualizar al paciente'}), 404
+    except Exception as e:
+        mysql.connection.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        cur.close()
 
 @app.route("/api/doctores/delete", methods=["DELETE"])
 def delete_doctor():
