@@ -278,6 +278,42 @@ def update_paciente():
     finally:
         cur.close()
 
+@app.route("/api/citas/update", methods=["PUT"])
+def update_cita():
+    if request.method != "PUT":
+        return jsonify({'success': False, 'message': 'Internal Server Error'}), 500
+    
+    try:
+        id = request.form["id"]
+        doctorId = request.form["doctorId"]
+        pacienteId = request.form["pacienteId"]
+        especialidadId = request.form["especialidadId"]
+        fecha = request.form["fecha"]
+        hora = request.form["hora"]
+        if not id or not doctorId or not pacienteId or not especialidadId or not fecha or not hora:
+            return jsonify({'success': False, 'message': 'Datos faltantes o erróneos'}), 500
+
+        #Comprobar que exista antes de update
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM citas WHERE id = %s", (id))
+        cita = cur.fetchone()
+        if cita:
+            return jsonify({'success': False, 'message': 'No existe la cita solicitada'}), 400
+
+        result = cur.execute("UPDATE citas SET doctorId = %s, pacienteId = %s, especialidadId = %s, fecha = %s, hora = %s WHERE id = %s", (doctorId, pacienteId, especialidadId, fecha, hora, id))
+        mysql.connection.commit()
+
+        # Verificando si algún registro fue afectado
+        if result > 0:
+            return jsonify({'success': True, 'message': 'Cita actualizada correctamente'}), 200
+        else:
+            return jsonify({'success': False, 'message': 'No se pudo actualizar la cita'}), 404
+    except Exception as e:
+        mysql.connection.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        cur.close()
+
 @app.route("/api/especialidades/update", methods=["PUT"])
 def update_especialidad():
     if request.method != "PUT":
