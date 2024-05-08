@@ -13,10 +13,49 @@ mysql = MySQL(app)
 # MySQL
 app.secret_key = "mysecretkey"
 
-@app.route("/")
-def Index():
+@app.route("/api/doctors")
+def get_doctors():
     cur = mysql.connection.cursor()
-    cur.execute("select * from contactss")
+    cur.execute("select * from doctores")
+    data = cur.fetchall()
+    # Convertir las tuplas a una lista de diccionarios
+    row_headers = [x[0] for x in cur.description]  # Esto captura los nombres de las columnas
+    json_data = []
+    for result in data:
+        json_data.append(dict(zip(row_headers, result)))
+    
+    return jsonify(json_data)
+
+@app.route("/api/patients")
+def get_patients():
+    cur = mysql.connection.cursor()
+    cur.execute("select * from pacientes")
+    data = cur.fetchall()
+    # Convertir las tuplas a una lista de diccionarios
+    row_headers = [x[0] for x in cur.description]  # Esto captura los nombres de las columnas
+    json_data = []
+    for result in data:
+        json_data.append(dict(zip(row_headers, result)))
+    
+    return jsonify(json_data)
+@app.route("/api/consults")
+
+def get_consults():
+    cur = mysql.connection.cursor()
+    cur.execute("select * from consultas")
+    data = cur.fetchall()
+    # Convertir las tuplas a una lista de diccionarios
+    row_headers = [x[0] for x in cur.description]  # Esto captura los nombres de las columnas
+    json_data = []
+    for result in data:
+        json_data.append(dict(zip(row_headers, result)))
+    
+    return jsonify(json_data)
+
+@app.route("/api/appointments")
+def get_appointments():
+    cur = mysql.connection.cursor()
+    cur.execute("select * from citas")
     data = cur.fetchall()
     # Convertir las tuplas a una lista de diccionarios
     row_headers = [x[0] for x in cur.description]  # Esto captura los nombres de las columnas
