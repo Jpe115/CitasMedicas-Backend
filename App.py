@@ -158,6 +158,37 @@ def add_especialidad():
     finally:
         cur.close()  # Asegurándonos de cerrar el cursor
 
+@app.route("/api/citas/add", methods=["POST"])
+def add_cita():
+    if request.method != "POST":
+        return jsonify({'success': False, 'message': 'Internal Server Error'}), 500
+
+    cur = mysql.connection.cursor()
+    
+    try:
+        doctorId = request.form["doctorId"]
+        pacienteId = request.form["pacienteId"]
+        especialidadId = request.form["especialidadId"]
+        fecha = request.form["fecha"]
+        hora = request.form["hora"]
+        if doctorId == "" or pacienteId == "" or especialidadId == "" or fecha == "" or hora == "":
+            return jsonify({'success': False, 'message': 'Datos faltantes o erróneos'}), 500
+
+        result = cur.execute("insert into citas (doctorId, pacienteId, especialidadId, fecha, hora) values (%s, %s, %s, %s, %s)", (doctorId, pacienteId, especialidadId, fecha, hora))
+        mysql.connection.commit()
+
+        # Verificando si algún registro fue afectado
+        if result > 0:
+            return jsonify({'success': True, 'message': 'Cita añadida correctamente'}), 200
+        else:
+            return jsonify({'success': False, 'message': 'No se pudo añadir la cita'}), 404
+    except Exception as e:
+        # En caso de una excepción, hacemos rollback y devolvemos error
+        mysql.connection.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        cur.close()  # Asegurándonos de cerrar el cursor
+
 # @app.route("/update/<id>", methods=["POST"])
 # def update_contact(id):
 #     if request.method == "POST":
