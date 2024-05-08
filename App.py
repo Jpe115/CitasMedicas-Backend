@@ -86,6 +86,9 @@ def add_doctor():
         if not nombre or not apellido or not especialidadId:
             return jsonify({'success': False, 'message': 'Datos faltantes o erróneos'}), 500
 
+        #Comprobar que no sea repetido
+
+
         result = cur.execute("insert into doctores (nombre, apellido, especialidadId) values (%s, %s, %s)", (nombre, apellido, especialidadId))
         mysql.connection.commit()
 
@@ -204,25 +207,26 @@ def add_cita():
 #         flash("Contact updated successfully")
 #         return redirect(url_for("Index"))
 
-@app.route("/api/doctores/delete/<string:id>")
-def delete_doctor(id):
-    cur = mysql.connection.cursor()
+@app.route("/api/doctores/delete", methods=["DELETE"])
+def delete_doctor():
     try:
-        # Ejecutando la sentencia SQL de DELETE
-        result = cur.execute("DELETE FROM doctores WHERE id = %s", (id,))
-        mysql.connection.commit()
+        id = request.form['id']
+        if id is None:
+            return jsonify({'success': False, 'message': 'Se requiere el parámetro "id"'})
         
-        # Verificando si algún registro fue afectado
+        cur = mysql.connection.cursor()
+        result = cur.execute("DELETE FROM doctores WHERE id = %s", (id))
+        mysql.connection.commit()
+
         if result > 0:
             return jsonify({'success': True, 'message': 'Doctor eliminado correctamente'}), 200
         else:
             return jsonify({'success': False, 'message': 'No se encontró el doctor para eliminar'}), 404
     except Exception as e:
-        # En caso de una excepción, hacemos rollback y devolvemos error
         mysql.connection.rollback()
         return jsonify({'success': False, 'message': str(e)}), 500
     finally:
-        cur.close()  # Asegurándonos de cerrar el cursor
+        cur.close()
 
 @app.route("/api/pacientes/delete/<string:id>")
 def delete_paciente(id):
