@@ -234,7 +234,7 @@ def update_doctor():
         if result > 0:
             return jsonify({'success': True, 'message': 'Doctor actualizado correctamente'}), 200
         else:
-            return jsonify({'success': False, 'message': 'No se pudo actualizar al doctor'}), 404
+            return jsonify({'success': False, 'message': 'No se pudo actualizar al doctor. Datos ingresados idénticos'}), 404
     except Exception as e:
         # En caso de una excepción, hacemos rollback y devolvemos error
         mysql.connection.rollback()
@@ -271,7 +271,7 @@ def update_paciente():
         if result > 0:
             return jsonify({'success': True, 'message': 'Paciente actualizado correctamente'}), 200
         else:
-            return jsonify({'success': False, 'message': 'No se pudo actualizar al paciente'}), 404
+            return jsonify({'success': False, 'message': 'No se pudo actualizar al paciente. Datos ingresados idénticos'}), 404
     except Exception as e:
         mysql.connection.rollback()
         return jsonify({'success': False, 'message': str(e)}), 500
@@ -307,7 +307,7 @@ def update_cita():
         if result > 0:
             return jsonify({'success': True, 'message': 'Cita actualizada correctamente'}), 200
         else:
-            return jsonify({'success': False, 'message': 'No se pudo actualizar la cita'}), 404
+            return jsonify({'success': False, 'message': 'No se pudo actualizar la cita. Datos ingresados idénticos'}), 404
     except Exception as e:
         mysql.connection.rollback()
         return jsonify({'success': False, 'message': str(e)}), 500
@@ -339,7 +339,7 @@ def update_especialidad():
         if result > 0:
             return jsonify({'success': True, 'message': 'Especialidad actualizada correctamente'}), 200
         else:
-            return jsonify({'success': False, 'message': 'No se pudo actualizar la especialidad'}), 404
+            return jsonify({'success': False, 'message': 'No se pudo actualizar la especialidad. Datos ingresados idénticos'}), 404
     except Exception as e:
         mysql.connection.rollback()
         return jsonify({'success': False, 'message': str(e)}), 500
