@@ -328,8 +328,8 @@ def update_especialidad():
         #Comprobar que exista antes de update
         cur = mysql.connection.cursor()
         cur.execute("SELECT * FROM especialidades WHERE id = %s", (id))
-        especialidad = cur.fetchone()
-        if not especialidad:
+        especialidad_encontrada = cur.fetchone()
+        if not especialidad_encontrada:
             return jsonify({'success': False, 'message': 'No existe la especialidad solicitada'}), 400
 
         result = cur.execute("UPDATE especialidades SET especialidad = %s WHERE id = %s", (especialidad, id))
