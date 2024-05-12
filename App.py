@@ -152,12 +152,12 @@ def add_especialidad():
             return jsonify({'success': False, 'message': 'Datos faltantes o erróneos'}), 500
         
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM especialidades WHERE especialidad = %s", (especialidad))
+        cur.execute("SELECT * FROM especialidades WHERE especialidad = %s", (especialidad,))
         especialidad = cur.fetchone()
         if especialidad:
             return jsonify({'success': False, 'message': 'Los datos de la especialidad ya existen'}), 400
 
-        result = cur.execute("insert into especialidades (especialidad) values (%s)", (especialidad))
+        result = cur.execute("insert into especialidades (especialidad) values (%s)", (especialidad,))
         mysql.connection.commit()
 
         # Verificando si algún registro fue afectado
@@ -391,11 +391,10 @@ def delete_paciente():
     finally:
         cur.close()  # Asegurándonos de cerrar el cursor
 
-@app.route("/api/especialidades/delete/", methods=["DELETE"])
+@app.route("/api/especialidades/delete/<string:id>", methods=["DELETE"])
 def delete_especialidad(id):
     cur = mysql.connection.cursor()
     try:
-        id = request.form['id']
         if id is None:
             return jsonify({'success': False, 'message': 'Se requiere el parámetro "id"'})
 
@@ -415,7 +414,7 @@ def delete_especialidad(id):
     finally:
         cur.close()  # Asegurándonos de cerrar el cursor
 
-@app.route("/api/citas/delete/", methods=["DELETE"])
+@app.route("/api/citas/delete", methods=["DELETE"])
 def delete_cita(id):
     cur = mysql.connection.cursor()
     try:
