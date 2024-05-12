@@ -347,7 +347,7 @@ def update_especialidad():
         cur.close()
 
 @app.route("/api/doctores/delete/<string:id>", methods=["DELETE"])
-def delete_doctor():
+def delete_doctor(id):
     try:
         if id is None:
             return jsonify({'success': False, 'message': 'Se requiere el parámetro "id"'})
@@ -367,7 +367,7 @@ def delete_doctor():
         cur.close()
 
 @app.route("/api/pacientes/delete/<string:id>", methods=["DELETE"])
-def delete_paciente():
+def delete_paciente(id):
     cur = mysql.connection.cursor()
     try:
         if id is None:
