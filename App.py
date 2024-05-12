@@ -346,10 +346,9 @@ def update_especialidad():
     finally:
         cur.close()
 
-@app.route("/api/doctores/delete", methods=["DELETE"])
+@app.route("/api/doctores/delete/<string:id>", methods=["DELETE"])
 def delete_doctor():
     try:
-        id = request.form['id']
         if id is None:
             return jsonify({'success': False, 'message': 'Se requiere el parámetro "id"'})
         
@@ -367,11 +366,10 @@ def delete_doctor():
     finally:
         cur.close()
 
-@app.route("/api/pacientes/delete", methods=["DELETE"])
+@app.route("/api/pacientes/delete/<string:id>", methods=["DELETE"])
 def delete_paciente():
     cur = mysql.connection.cursor()
     try:
-        id = request.form['id']
         if id is None:
             return jsonify({'success': False, 'message': 'Se requiere el parámetro "id"'})
 
@@ -414,11 +412,10 @@ def delete_especialidad(id):
     finally:
         cur.close()  # Asegurándonos de cerrar el cursor
 
-@app.route("/api/citas/delete", methods=["DELETE"])
+@app.route("/api/citas/delete/<string:id>", methods=["DELETE"])
 def delete_cita(id):
     cur = mysql.connection.cursor()
     try:
-        id = request.form['id']
         if id is None:
             return jsonify({'success': False, 'message': 'Se requiere el parámetro "id"'})
 
