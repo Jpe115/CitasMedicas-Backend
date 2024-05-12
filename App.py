@@ -222,7 +222,7 @@ def update_doctor():
 
         #Comprobar que exista antes de update
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM doctores WHERE id = %s", (id))
+        cur.execute("SELECT * FROM doctores WHERE id = %s", (id,))
         doctor = cur.fetchone()
         if not doctor:
             return jsonify({'success': False, 'message': 'No existe el doctor solicitado'}), 400
@@ -259,7 +259,7 @@ def update_paciente():
 
         #Comprobar que exista antes de update
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM pacientes WHERE id = %s", (id))
+        cur.execute("SELECT * FROM pacientes WHERE id = %s", (id,))
         paciente = cur.fetchone()
         if not paciente:
             return jsonify({'success': False, 'message': 'No existe el paciente solicitado'}), 400
@@ -295,7 +295,7 @@ def update_cita():
 
         #Comprobar que exista antes de update
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM citas WHERE id = %s", (id))
+        cur.execute("SELECT * FROM citas WHERE id = %s", (id,))
         cita = cur.fetchone()
         if not cita:
             return jsonify({'success': False, 'message': 'No existe la cita solicitada'}), 400
@@ -327,7 +327,7 @@ def update_especialidad():
 
         #Comprobar que exista antes de update
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM especialidades WHERE id = %s", (id))
+        cur.execute("SELECT * FROM especialidades WHERE id = %s", (id,))
         especialidad_encontrada = cur.fetchone()
         if not especialidad_encontrada:
             return jsonify({'success': False, 'message': 'No existe la especialidad solicitada'}), 400
@@ -353,7 +353,7 @@ def delete_doctor(id):
             return jsonify({'success': False, 'message': 'Se requiere el parámetro "id"'})
         
         cur = mysql.connection.cursor()
-        result = cur.execute("DELETE FROM doctores WHERE id = %s", (id))
+        result = cur.execute("DELETE FROM doctores WHERE id = %s", (id,))
         mysql.connection.commit()
 
         if result > 0:
@@ -374,7 +374,7 @@ def delete_paciente(id):
             return jsonify({'success': False, 'message': 'Se requiere el parámetro "id"'})
 
         # Ejecutando la sentencia SQL de DELETE
-        result = cur.execute("DELETE FROM pacientes WHERE id = %s", (id))
+        result = cur.execute("DELETE FROM pacientes WHERE id = %s", (id,))
         mysql.connection.commit()
         
         # Verificando si algún registro fue afectado
