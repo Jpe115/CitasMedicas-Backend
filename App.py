@@ -153,8 +153,8 @@ def add_especialidad():
         
         cur = mysql.connection.cursor()
         cur.execute("SELECT * FROM especialidades WHERE especialidad = %s", (especialidad,))
-        especialidad = cur.fetchone()
-        if especialidad:
+        especialidad_encontrada = cur.fetchone()
+        if especialidad_encontrada:
             return jsonify({'success': False, 'message': 'Los datos de la especialidad ya existen'}), 400
 
         result = cur.execute("insert into especialidades (especialidad) values (%s)", (especialidad,))
