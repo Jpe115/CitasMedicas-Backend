@@ -1,7 +1,9 @@
 from flask import Flask, jsonify, request, redirect, url_for, flash
 from flask_mysqldb import MySQL
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 # MySQL Connection
 app.config["MYSQL_HOST"] = "localhost"
