@@ -287,12 +287,9 @@ def update_cita():
     
     try:
         id = request.form["id"]
-        doctorId = request.form["doctorId"]
-        pacienteId = request.form["pacienteId"]
-        especialidadId = request.form["especialidadId"]
         fecha = request.form["fecha"]
         hora = request.form["hora"]
-        if not id or not doctorId or not pacienteId or not especialidadId or not fecha or not hora:
+        if not id  or not fecha or not hora:
             return jsonify({'success': False, 'message': 'Datos faltantes o erróneos'}), 500
 
         #Comprobar que exista antes de update
@@ -302,7 +299,7 @@ def update_cita():
         if not cita:
             return jsonify({'success': False, 'message': 'No existe la cita solicitada'}), 400
 
-        result = cur.execute("UPDATE citas SET doctorId = %s, pacienteId = %s, especialidadId = %s, fecha = %s, hora = %s WHERE id = %s", (doctorId, pacienteId, especialidadId, fecha, hora, id))
+        result = cur.execute("UPDATE citas SET fecha = %s, hora = %s WHERE id = %s", (fecha, hora, id))
         mysql.connection.commit()
 
         # Verificando si algún registro fue afectado
