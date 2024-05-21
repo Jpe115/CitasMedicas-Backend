@@ -17,65 +17,85 @@ app.secret_key = "mysecretkey"
 
 @app.route("/api/doctores")
 def get_doctores():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT d.id, nombre, apellido, especialidadId, e.especialidad FROM doctores d INNER JOIN especialidades e ON d.especialidadId = e.id")
-    data = cur.fetchall()
-    # Convertir las tuplas a una lista de diccionarios
-    row_headers = [x[0] for x in cur.description]  # Esto captura los nombres de las columnas
-    json_data = []
-    for result in data:
-        json_data.append(dict(zip(row_headers, result)))
-    
-    cur.close()
-    return jsonify(json_data)
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT d.id, nombre, apellido, especialidadId, e.especialidad FROM doctores d INNER JOIN especialidades e ON d.especialidadId = e.id")
+        data = cur.fetchall()
+        # Convertir las tuplas a una lista de diccionarios
+        row_headers = [x[0] for x in cur.description]  # Esto captura los nombres de las columnas
+        json_data = []
+        for result in data:
+            json_data.append(dict(zip(row_headers, result)))
+
+        return jsonify(json_data)
+
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        cur.close()  # Asegurándonos de cerrar el cursor
 
 @app.route("/api/pacientes")
 def get_pacientes():
-    cur = mysql.connection.cursor()
-    cur.execute("select * from pacientes")
-    data = cur.fetchall()
-    # Convertir las tuplas a una lista de diccionarios
-    row_headers = [x[0] for x in cur.description]  # Esto captura los nombres de las columnas
-    json_data = []
-    for result in data:
-        json_data.append(dict(zip(row_headers, result)))
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("select * from pacientes")
+        data = cur.fetchall()
+        # Convertir las tuplas a una lista de diccionarios
+        row_headers = [x[0] for x in cur.description]  # Esto captura los nombres de las columnas
+        json_data = []
+        for result in data:
+            json_data.append(dict(zip(row_headers, result)))
+
+        return jsonify(json_data)
     
-    cur.close()
-    return jsonify(json_data)
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        cur.close()
 
 @app.route("/api/especialidades")
 def get_especialidades():
-    cur = mysql.connection.cursor()
-    cur.execute("select * from especialidades")
-    data = cur.fetchall()
-    # Convertir las tuplas a una lista de diccionarios
-    row_headers = [x[0] for x in cur.description]  # Esto captura los nombres de las columnas
-    json_data = []
-    for result in data:
-        json_data.append(dict(zip(row_headers, result)))
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("select * from especialidades")
+        data = cur.fetchall()
+        # Convertir las tuplas a una lista de diccionarios
+        row_headers = [x[0] for x in cur.description]  # Esto captura los nombres de las columnas
+        json_data = []
+        for result in data:
+            json_data.append(dict(zip(row_headers, result)))
+
+        return jsonify(json_data)
     
-    cur.close()
-    return jsonify(json_data)
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        cur.close()
 
 @app.route("/api/citas/<string:year>/<string:mes>")
 def get_citas(year, mes):
-    if mes == "12":
-        mes2 = "01"
-        año2 = int(year) + 1
-    else:
-        mes2 = int(mes) + 1
-        año2 = year
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT c.id, c.pacienteId, p.nombre AS nombrePaciente, p.apellido AS apellidoPaciente, p.edad, c.doctorId, d.nombre AS nombreDoctor, d.apellido AS apellidoDoctor, c.especialidadId, e.especialidad, c.fecha, c.hora FROM citas c INNER JOIN doctores d ON c.doctorId = d.id INNER JOIN pacientes p ON c.pacienteId = p.id INNER JOIN especialidades e ON c.especialidadId = e.id WHERE fecha >= '{0}-{1}-01' AND fecha < '{2}-{3}-01' ORDER BY c.hora".format(year, mes, año2, mes2))
-    data = cur.fetchall()
-    # Convertir las tuplas a una lista de diccionarios
-    row_headers = [x[0] for x in cur.description]  # Esto captura los nombres de las columnas
-    json_data = []
-    for result in data:
-        json_data.append(dict(zip(row_headers, result)))
+    try:
+        if mes == "12":
+            mes2 = "01"
+            año2 = int(year) + 1
+        else:
+            mes2 = int(mes) + 1
+            año2 = year
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT c.id, c.pacienteId, p.nombre AS nombrePaciente, p.apellido AS apellidoPaciente, p.edad, c.doctorId, d.nombre AS nombreDoctor, d.apellido AS apellidoDoctor, c.especialidadId, e.especialidad, c.fecha, c.hora FROM citas c INNER JOIN doctores d ON c.doctorId = d.id INNER JOIN pacientes p ON c.pacienteId = p.id INNER JOIN especialidades e ON c.especialidadId = e.id WHERE fecha >= '{0}-{1}-01' AND fecha < '{2}-{3}-01' ORDER BY c.hora".format(year, mes, año2, mes2))
+        data = cur.fetchall()
+        # Convertir las tuplas a una lista de diccionarios
+        row_headers = [x[0] for x in cur.description]  # Esto captura los nombres de las columnas
+        json_data = []
+        for result in data:
+            json_data.append(dict(zip(row_headers, result)))
+
+        return jsonify(json_data)
     
-    cur.close()
-    return jsonify(json_data)
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        cur.close()
 
 @app.route("/api/doctores/add", methods=["POST"])
 def add_doctor():
