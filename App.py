@@ -26,6 +26,7 @@ def get_doctores():
     for result in data:
         json_data.append(dict(zip(row_headers, result)))
     
+    cur.close()
     return jsonify(json_data)
 
 @app.route("/api/pacientes")
@@ -39,9 +40,10 @@ def get_pacientes():
     for result in data:
         json_data.append(dict(zip(row_headers, result)))
     
+    cur.close()
     return jsonify(json_data)
-@app.route("/api/especialidades")
 
+@app.route("/api/especialidades")
 def get_especialidades():
     cur = mysql.connection.cursor()
     cur.execute("select * from especialidades")
@@ -52,6 +54,7 @@ def get_especialidades():
     for result in data:
         json_data.append(dict(zip(row_headers, result)))
     
+    cur.close()
     return jsonify(json_data)
 
 @app.route("/api/citas/<string:year>/<string:mes>")
@@ -71,6 +74,7 @@ def get_citas(year, mes):
     for result in data:
         json_data.append(dict(zip(row_headers, result)))
     
+    cur.close()
     return jsonify(json_data)
 
 @app.route("/api/doctores/add", methods=["POST"])
